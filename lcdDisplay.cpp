@@ -157,11 +157,11 @@ void lcdDisplay::displayOn(bool cursor_on, bool blink_on){
 
 void lcdDisplay::setEntryMode(bool direct, bool shift){
     uint8_t command = SET_ENTRY_MODE;
-    if (direct)
+    if (direct == true)
         command +=0x02;
-    if (shift)
+    if (shift == true)
         command +=0x01;
-    lcdDisplay::sendCommand(SET_ENTRY_MODE, 50);
+    lcdDisplay::sendCommand(command, 50);
 }
 
 void lcdDisplay::setHome(){
