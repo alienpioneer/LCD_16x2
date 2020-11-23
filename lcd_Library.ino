@@ -1,6 +1,6 @@
 #include"lcdDisplay.h"
 
-//#define MSP
+#define MSP
 
 #ifndef MSP
 #define RS  9
