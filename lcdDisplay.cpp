@@ -23,10 +23,7 @@ void lcdDisplay::setup(uint8_t lines, bool normal_font){
     digitalWrite(RW_pin, LOW);
     digitalWrite(E_pin, LOW);
 
-
     // Force init
-    
-
     if (FOUR_BIT_MODE){
         formatCommand(0x30);
         for (uint8_t i=0; i<=3; i++){
@@ -48,6 +45,7 @@ void lcdDisplay::setup(uint8_t lines, bool normal_font){
         sendClock();
 
         setFunction();
+        delayMicroseconds(4500);
 
         displayOff();
 
