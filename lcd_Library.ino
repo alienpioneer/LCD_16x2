@@ -24,13 +24,15 @@
 lcdDisplay lcd(RS, RW, E, D7, D6, D5, D4);
 //LiquidCrystal lcd(RS, RW, E, D4, D5, D6, D7);
 
+int A = 11000;
+float B = 123.1344;
+
 void setup() {
   lcd.setup();
-  lcd.displayOn(true, true);
+  lcd.displayOn();
   lcd.writeText("Voltage: ");
   lcd.setCursorPosition(2,0);
   lcd.writeText("Current: ");
-  // lcd.setCursorPosition(1,9);
   // lcd.writeText("12,92");
   // lcd.setCursorPosition(2,10);
   // lcd.writeText("1,22");
@@ -39,5 +41,13 @@ void setup() {
 }
 
 void loop() {
-  
+  A = A - 1;
+  B = B - 0.12;
+  delay(300);
+  if (A>2){
+      lcd.setCursorPosition(1,9);
+      lcd.writeNumber(A);
+      lcd.setCursorPosition(2,9);
+      lcd.writeNumber(B, 3);
+  };
 }

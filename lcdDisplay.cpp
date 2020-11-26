@@ -123,7 +123,7 @@ void lcdDisplay::setCursorPosition(uint8_t row, uint8_t position){
     lcdDisplay::sendCommand((uint8_t)command, 40);
 }
 
-void lcdDisplay::writeCharacter(const char c){
+void lcdDisplay::writeCharacter(char c){
     lcdDisplay::sendData(c, 50);
 }
 
@@ -165,6 +165,42 @@ void lcdDisplay::setEntryMode(bool direct, bool shift){
 void lcdDisplay::setHome(){
     lcdDisplay::sendCommand(DISPLAY_HOME, 40);
     delayMicroseconds(50000);
+}
+
+void lcdDisplay::writeNumber(int number){
+    //maximum 5 digits
+    char digits[10] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+    const int dec[4] = {10000, 1000, 100, 10};
+    uint8_t i = 0;
+    uint8_t digit;
+    int tmp = number;
+    bool leadingZeros = false;
+    while(i<=3){
+        digit = tmp / dec[i];
+        if (digit != 0 || leadingZeros == true){
+            lcdDisplay::writeCharacter(digits[digit]);
+            tmp = tmp % dec[i];
+            leadingZeros = true;
+        };
+        i++;
+    };
+    lcdDisplay::writeCharacter(digits[digit]);
+}
+
+void lcdDisplay::writeNumber(float number, uint8_t decimals){
+    //max 4 digits
+    const int dec[4] = {10, 100, 1000, 10000};
+    uint8_t dec_places;
+    int integer_part, decimal_part;
+    if (decimals > 4)
+        dec_places = 4;
+    else
+        dec_places = decimals;
+    integer_part = (int)number;
+    decimal_part = (number - integer_part)*dec[dec_places];
+    lcdDisplay::writeNumber(integer_part);
+    lcdDisplay::writeCharacter(',');
+    lcdDisplay::writeNumber((int)decimal_part);
 }
 
 lcdDisplay::~lcdDisplay(){};

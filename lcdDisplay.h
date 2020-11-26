@@ -57,6 +57,10 @@ class lcdDisplay{
         void writeCharacter(char c);
 
         void writeText(const String &txt);
+
+        void writeNumber(int number);
+
+        void writeNumber(float number, uint8_t decimals);
 };
 
 #endif
