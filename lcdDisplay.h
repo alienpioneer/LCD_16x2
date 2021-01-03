@@ -1,6 +1,10 @@
 #pragma once
+
+#ifdef MSP430
+#include <Energia.h>
+#else
 #include <Arduino.h>
-//#include <Energia.h>
+#endif
 
 #ifndef lcdDisplay_h
 #define lcdDisplay_h
