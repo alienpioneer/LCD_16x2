@@ -29,42 +29,44 @@ class lcdDisplay{
         static const uint8_t SET_ENTRY_MODE = 0x04;
         
 
-        void formatCommand(uint8_t command);
+        void formatCommand      (uint8_t command);
 
-        void sendCommand(uint8_t command, long duration);
+        void sendCommand        (uint8_t command, long duration);
 
-        void sendData(char data, long duration);
+        void sendData           (char data, long duration);
 
-        void sendClock();
+        void sendClock          ();
 
     public:
-        lcdDisplay(uint8_t rs, uint8_t rw, uint8_t e, uint8_t db7, uint8_t db6, uint8_t db5, uint8_t db4);
+        lcdDisplay              (uint8_t rs, uint8_t rw, uint8_t e, uint8_t db7, uint8_t db6, uint8_t db5, uint8_t db4);
 
-        ~lcdDisplay();
+        ~lcdDisplay             ();
 
-        void setup(uint8_t lines = 2, bool normal_font = true);
+        void setup              (uint8_t lines = 2, bool normal_font = true);
 
-        void displayClear();
+        void displayClear       ();
 
-        void setHome();
+        void setHome            ();
 
-        void displayOff();
+        void displayOff         ();
 
-        void setFunction();
+        void setFunction        ();
 
-        void displayOn(bool cursor_on = false, bool blink_on = false);
+        void displayOn           (bool cursor_on = false, bool blink_on = false);
 
-        void setEntryMode(bool direct = true, bool shift = false);
+        void setEntryMode       (bool direct = true, bool shift = false);
 
-        void setCursorPosition(uint8_t row, uint8_t position);
+        void setCursorPosition  (uint8_t row, uint8_t position);
 
-        void writeCharacter(char c);
+        void writeCharacter     (char c);
 
-        void writeText(const String &txt);
+        void writeText          (const String &txt);
 
-        void writeNumber(int number);
+        void writeNumber        (int number);
 
-        void writeNumber(float number, uint8_t decimals);
+        void writeNumber        (float number, uint8_t decimals);
+
+        void clearRegion        (uint8_t number_of_positions);
 };
 
 #endif

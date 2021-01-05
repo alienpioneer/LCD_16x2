@@ -1,9 +1,9 @@
 #include"lcdDisplay.h"
 //#include <LiquidCrystal.h>
 
-#define MSP
+//#define MSP430
 
-#ifdef MSP
+#ifdef MSP430
   #define RS  4
   #define RW  5
   #define E   6

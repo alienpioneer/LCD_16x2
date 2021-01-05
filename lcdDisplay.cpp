@@ -109,7 +109,7 @@ void lcdDisplay::setFunction(){
         command += 0x08;                    // - 0000 1000
     if (NORMAL_FONT == false)
         command += 0x04;                    // - 0000 0100 
-    lcdDisplay::sendCommand((uint8_t)command, 40);   // 70 us
+    sendCommand((uint8_t)command, 40);   // 70 us
 }
 
 void lcdDisplay::setCursorPosition(uint8_t row, uint8_t position){
@@ -120,11 +120,11 @@ void lcdDisplay::setCursorPosition(uint8_t row, uint8_t position){
         command += 0x40;
         command += position;
     }
-    lcdDisplay::sendCommand((uint8_t)command, 40);
+    sendCommand((uint8_t)command, 40);
 }
 
 void lcdDisplay::writeCharacter(char c){
-    lcdDisplay::sendData(c, 50);
+    sendData(c, 50);
 }
 
 void lcdDisplay::writeText(const String &txt){
@@ -135,12 +135,12 @@ void lcdDisplay::writeText(const String &txt){
  }
 
 void lcdDisplay::displayOff(){
-    lcdDisplay::sendCommand(DISPLAY_OFF, 60);
+    sendCommand(DISPLAY_OFF, 60);
     delayMicroseconds(2000);
 }
 
 void lcdDisplay::displayClear(){
-    lcdDisplay::sendCommand(DISPLAY_CLEAR, 60);
+    sendCommand(DISPLAY_CLEAR, 60);
     delayMicroseconds(4000);
 }
 
@@ -150,7 +150,7 @@ void lcdDisplay::displayOn(bool cursor_on, bool blink_on){
         command += 0x02;
     if (blink_on)
         command += 0x01;
-    lcdDisplay::sendCommand(command, 50);
+    sendCommand(command, 50);
 }
 
 void lcdDisplay::setEntryMode(bool direct, bool shift){
@@ -159,16 +159,18 @@ void lcdDisplay::setEntryMode(bool direct, bool shift){
         command +=0x02;
     if (shift == true)
         command +=0x01;
-    lcdDisplay::sendCommand(command, 50);
+    sendCommand(command, 50);
 }
 
 void lcdDisplay::setHome(){
-    lcdDisplay::sendCommand(DISPLAY_HOME, 40);
+    sendCommand(DISPLAY_HOME, 40);
     delayMicroseconds(50000);
 }
 
 void lcdDisplay::writeNumber(int number){
-    //maximum 5 digits
+    // maximum 5 digits
+    // set address must be called before
+    // TO DO negative numbers
     char digits[10] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
     const int dec[4] = {10000, 1000, 100, 10};
     uint8_t i = 0;
@@ -178,29 +180,41 @@ void lcdDisplay::writeNumber(int number){
     while(i<=3){
         digit = tmp / dec[i];
         if (digit != 0 || leadingZeros == true){
-            lcdDisplay::writeCharacter(digits[digit]);
+            writeCharacter(digits[digit]);
             tmp = tmp % dec[i];
             leadingZeros = true;
         };
         i++;
     };
-    lcdDisplay::writeCharacter(digits[digit]);
+    writeCharacter(digits[digit]);
 }
 
 void lcdDisplay::writeNumber(float number, uint8_t decimals){
-    //max 4 digits
+    // max 4 decimals
+    // set address must be called before
+    // TO DO negative numbers
     const int dec[4] = {10, 100, 1000, 10000};
     uint8_t dec_places;
-    int integer_part, decimal_part;
+    uint16_t integer_part, decimal_part;
     if (decimals > 4)
-        dec_places = 4;
+        dec_places = 3;
     else
-        dec_places = decimals;
+        dec_places = decimals - 1;
     integer_part = (int)number;
     decimal_part = (number - integer_part)*dec[dec_places];
-    lcdDisplay::writeNumber(integer_part);
-    lcdDisplay::writeCharacter(',');
-    lcdDisplay::writeNumber((int)decimal_part);
+    writeNumber(integer_part);
+    writeCharacter(',');
+    writeNumber((int)decimal_part);
+}
+
+void lcdDisplay::clearRegion(uint8_t number_of_positions){
+    // writes spaces 0x20 for number_of_position
+    // set address must be called before
+    uint8_t i = 0;
+    while(i<number_of_positions){
+        writeCharacter(' ');
+        i++;
+    }
 }
 
 lcdDisplay::~lcdDisplay(){};
