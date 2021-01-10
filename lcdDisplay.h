@@ -43,30 +43,18 @@ class lcdDisplay{
         ~lcdDisplay             ();
 
         void setup              (uint8_t lines = 2, bool normal_font = true);
-
         void displayClear       ();
-
         void setHome            ();
-
         void displayOff         ();
-
         void setFunction        ();
-
         void displayOn           (bool cursor_on = false, bool blink_on = false);
-
         void setEntryMode       (bool direct = true, bool shift = false);
-
         void setCursorPosition  (uint8_t row, uint8_t position);
-
         void writeCharacter     (char c);
-
         void writeText          (const String &txt);
-
-        void writeNumber        (int number);
-
-        void writeNumber        (float number, uint8_t decimals);
-
-        void clearRegion        (uint8_t number_of_positions);
+        void writeNumber        (int number, const uint8_t nr_of_digits = 5);
+        void writeFloatNumber   (float number,  const uint8_t int_nr_of_digits = 3, const uint8_t nr_of_decimals = 4);
+        void clearRegion        (uint8_t nr_of_positions);
 };
 
 #endif
