@@ -1,5 +1,6 @@
 #include "lcdDisplay.h"
 
+// main constructor and initializer
 lcdDisplay::lcdDisplay(uint8_t rs, uint8_t rw, uint8_t e, uint8_t db7, uint8_t db6, uint8_t db5, uint8_t db4){
     RS_pin = rs; RW_pin = rw; E_pin = e;
     pinArray[0] = db7;
@@ -14,8 +15,9 @@ lcdDisplay::lcdDisplay(uint8_t rs, uint8_t rw, uint8_t e, uint8_t db7, uint8_t d
         pinMode(pinArray[i], OUTPUT);
 }
 
-
-void lcdDisplay::setup(uint8_t lines, bool normal_font){
+// setup function, must be called first
+void lcdDisplay::setup(uint8_t lines, bool normal_font)
+{
     LINES  = lines;
     NORMAL_FONT = normal_font;
 
@@ -24,7 +26,10 @@ void lcdDisplay::setup(uint8_t lines, bool normal_font){
     digitalWrite(RW_pin, LOW);
     digitalWrite(E_pin, LOW);
 
-    // Force init
+    // Force init - the program must set all functions prior to the 4 bit operations
+    // When power is on, 8 bit operations are automatically selected and the first write must be 
+    // performed as 8 bit opperation thus a rewrite is required pages 39+42 datasheet
+    // This step is problematic , found this solution from another library
     if (FOUR_BIT_MODE){
         formatCommand(0x30);
         for (uint8_t i=0; i<=3; i++){
@@ -39,7 +44,7 @@ void lcdDisplay::setup(uint8_t lines, bool normal_font){
         sendClock();
         delayMicroseconds(150);
 
-        formatCommand(0x20);
+        formatCommand(SET_FUNCTION);
         for (uint8_t i=0; i<=3; i++){
             digitalWrite(pinArray[i], commandArray[i]);
         };
@@ -56,7 +61,7 @@ void lcdDisplay::setup(uint8_t lines, bool normal_font){
     }
 }
 
-
+// basic helper function for sendData and sendCommand
 void lcdDisplay::sendClock(){
     digitalWrite(E_pin, LOW);
     delayMicroseconds(10); 
@@ -66,8 +71,10 @@ void lcdDisplay::sendClock(){
     delayMicroseconds(50);
 }
 
-
-void lcdDisplay::formatCommand(uint8_t command){
+// helper function that prepares the command array
+// the command array holds the state for each out pin 
+void lcdDisplay::formatCommand(uint8_t command)
+{
     uint8_t mask = 0x80;
     uint8_t tmp;
     for (uint8_t i=0;i<8;i++){
@@ -78,7 +85,7 @@ void lcdDisplay::formatCommand(uint8_t command){
     };
 }
 
-
+// send basic data operation
 void lcdDisplay::sendData(char data, long duration){
     formatCommand(data);
     digitalWrite(RS_pin, HIGH);
@@ -91,7 +98,7 @@ void lcdDisplay::sendData(char data, long duration){
     delayMicroseconds(duration);
 }
 
-
+// send basic command operation
 void lcdDisplay::sendCommand(uint8_t command, long duration){
     // pinArray [ DB7_pin, DB6_pin, DB5_pin, DB4_pin ];
     // commandArray  [ D7, D6, D5, D4, D3, D2, D1, D0 ]
@@ -106,7 +113,7 @@ void lcdDisplay::sendCommand(uint8_t command, long duration){
     delayMicroseconds(duration);
 }
 
-
+// sets interface data lenth (4 bit only), number of lines (2) and font - page 24 datasheet
 void lcdDisplay::setFunction(){
     uint8_t command = SET_FUNCTION;
     if (FOUR_BIT_MODE == false){
@@ -124,7 +131,7 @@ void lcdDisplay::setFunction(){
     sendCommand((uint8_t)command, 40);   // 70 us
 }
 
-
+// sets DDRAM adress
 void lcdDisplay::setCursorPosition(uint8_t row, uint8_t position){
     uint8_t command = SET_RAM_ADDRESS;
     if (row == 1)
@@ -136,12 +143,12 @@ void lcdDisplay::setCursorPosition(uint8_t row, uint8_t position){
     sendCommand((uint8_t)command, 40);
 }
 
-
+// display a single character
 void lcdDisplay::writeCharacter(char c){
     sendData(c, 50);
 }
 
-
+// write text; setCursorPosition must be called before
 void lcdDisplay::writeText(const String &txt){
     for(uint16_t i=0; i<txt.length(); i++){
         writeCharacter(txt[i]);
@@ -149,19 +156,19 @@ void lcdDisplay::writeText(const String &txt){
     }   
 }
 
-
+// sets the display off, cursor off and blinking off
 void lcdDisplay::displayOff(){
     sendCommand(DISPLAY_OFF, 60);
     delayMicroseconds(2000);
 }
 
-
+// cleard the entire display and sets DDRAM addres to 0 in address counter (home)
 void lcdDisplay::displayClear(){
     sendCommand(DISPLAY_CLEAR, 60);
     delayMicroseconds(4000);
 }
 
-
+// sets the display off, cursor on/off or blinking on/off
 void lcdDisplay::displayOn(bool cursor_on, bool blink_on){
     uint8_t command = DISPLAY_ON;
     if (cursor_on)
@@ -171,7 +178,7 @@ void lcdDisplay::displayOn(bool cursor_on, bool blink_on){
     sendCommand(command, 50);
 }
 
-
+// sets cursor move direction and specifies display shift - operations during data write/read
 void lcdDisplay::setEntryMode(bool direct, bool shift){
     uint8_t command = SET_ENTRY_MODE;
     if (direct == true)
@@ -181,7 +188,7 @@ void lcdDisplay::setEntryMode(bool direct, bool shift){
     sendCommand(command, 50);
 }
 
-
+// sets DDRAM addres to 0 in address counter (start of the first line)
 void lcdDisplay::setHome(){
     sendCommand(DISPLAY_HOME, 40);
     delayMicroseconds(50000);
@@ -221,7 +228,7 @@ void lcdDisplay::writeNumber(int number, const uint8_t nr_of_digits){
 void lcdDisplay::writeFloatNumber(float number,  const uint8_t int_nr_of_digits, const uint8_t nr_of_decimals){
     // setCursorPosition must be called before
     // MAX 4 decimals
-    // nr_of_digits is the max number of digits, including leading zeros
+    // nr_of_digits is the max number of digits for the integer part, including leading zeros
     // ex: nr = 23.245, number_of_decimals = 2, nr_of_digits = 4 -> 0023.24
 
     const uint16_t dec_mult[4] = {10, 100, 1000, 10000};
