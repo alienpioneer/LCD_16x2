@@ -1,5 +1,5 @@
 # LCD_16x2
-16x2 lcd screen library for Arduino using the HD44780U display driver.
+16x2 lcd screen library for Arduino and MSP430 using the HD44780U display driver.
 
 # Basic Usage
 Call the constructor when creation the object by passing the pin mappings as arguements, the call setup() at startup.
